@@ -49,28 +49,28 @@ struct ContentView: View {
 //                .background(Color.blue)
 //                .padding()
                 
-                NavigationLink {
-                    UploadView(user:user)
-                } label: {
-                    Image(systemName: "camera")
-                    Text("Photographic")
-                }
-                .foregroundColor(Color.white)
-                .font(Font.largeTitle)            .frame(minWidth:0, maxWidth: CGFloat.infinity, minHeight:75)
-                .background(Color.blue)
-                .padding()
-            
-            
-                NavigationLink {
-                    UploadView(user:user)
-                } label: {
-                    Image(systemName: "video")
-                    Text("Real-time")
-                }
-                .foregroundColor(Color.white)
-                .font(Font.largeTitle)            .frame(minWidth:0, maxWidth: CGFloat.infinity, minHeight:75)
-                .background(Color.blue)
-                .padding()
+                    NavigationLink {
+                        UploadView(user:user)
+                    } label: {
+                        Image(systemName: "camera")
+                        Text("Photographic")
+                    }
+                    .foregroundColor(Color.white)
+                    .font(Font.largeTitle)            .frame(minWidth:0, maxWidth: CGFloat.infinity, minHeight:75)
+                    .background(Color.blue)
+                    .padding()
+                
+                
+                    NavigationLink {
+                        RealTimeView(user:user)
+                    } label: {
+                        Image(systemName: "video")
+                        Text("Real-time")
+                    }
+                    .foregroundColor(Color.white)
+                    .font(Font.largeTitle)            .frame(minWidth:0, maxWidth: CGFloat.infinity, minHeight:75)
+                    .background(Color.blue)
+                    .padding()
 
             }
         }

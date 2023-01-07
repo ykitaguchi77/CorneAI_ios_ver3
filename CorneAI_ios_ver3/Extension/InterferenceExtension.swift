@@ -37,8 +37,8 @@ class Yolov5Interference: ObservableObject {
         var dict: [String:String] = [:]
         // Get length
         let length = mlMultiArray.count
-        
-        if length != 0 {
+
+        if length == 9 {   //0でないことの確認、および時々処理の問題で18になりエラーになるのでチェック
             // Set content of multi array to our out put array
             for i in 0...length - 1 {
                 array.append(Double(truncating: mlMultiArray[[0,NSNumber(value: i)]]))
@@ -58,7 +58,7 @@ class Yolov5Interference: ObservableObject {
             return message
             
             } else {
-                let message = "no cornea detected"
+                let message = "no cornea detected \n \n"
                 return message
             }
     }

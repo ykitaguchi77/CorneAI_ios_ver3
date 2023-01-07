@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF54F5362967170E00FC56C0 /* RealTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF54F5352967170E00FC56C0 /* RealTimeView.swift */; };
+		BF54F538296718CD00FC56C0 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF54F537296718CD00FC56C0 /* VideoCapture.swift */; };
+		BF54F53C2969AFDB00FC56C0 /* ScreenShotExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF54F53B2969AFDB00FC56C0 /* ScreenShotExtension.swift */; };
 		BFB75D0829638E4600424379 /* CorneAI_ios_ver3App.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D0729638E4600424379 /* CorneAI_ios_ver3App.swift */; };
 		BFB75D0A29638E4600424379 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D0929638E4600424379 /* ContentView.swift */; };
 		BFB75D0C29638E4800424379 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFB75D0B29638E4800424379 /* Assets.xcassets */; };
@@ -14,12 +17,15 @@
 		BFB75D162963911C00424379 /* last.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D152963911C00424379 /* last.mlmodel */; };
 		BFB75D182963915C00424379 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D172963915C00424379 /* UIImageExtension.swift */; };
 		BFB75D1A296393E800424379 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D19296393E800424379 /* UIImage+Extension.swift */; };
-		BFB75D1C2963947600424379 /* UploadPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D1B2963947600424379 /* UploadPage.swift */; };
+		BFB75D1C2963947600424379 /* UploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D1B2963947600424379 /* UploadView.swift */; };
 		BFB75D1E2963949F00424379 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D1D2963949F00424379 /* ImagePicker.swift */; };
 		BFB75D2429642A3C00424379 /* InterferenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D2329642A3C00424379 /* InterferenceExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF54F5352967170E00FC56C0 /* RealTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTimeView.swift; sourceTree = "<group>"; };
+		BF54F537296718CD00FC56C0 /* VideoCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
+		BF54F53B2969AFDB00FC56C0 /* ScreenShotExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenShotExtension.swift; sourceTree = "<group>"; };
 		BFB75D0429638E4600424379 /* CorneAI_ios_ver3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CorneAI_ios_ver3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFB75D0729638E4600424379 /* CorneAI_ios_ver3App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorneAI_ios_ver3App.swift; sourceTree = "<group>"; };
 		BFB75D0929638E4600424379 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -28,7 +34,7 @@
 		BFB75D152963911C00424379 /* last.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = last.mlmodel; sourceTree = "<group>"; };
 		BFB75D172963915C00424379 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		BFB75D19296393E800424379 /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
-		BFB75D1B2963947600424379 /* UploadPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPage.swift; sourceTree = "<group>"; };
+		BFB75D1B2963947600424379 /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
 		BFB75D1D2963949F00424379 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		BFB75D2329642A3C00424379 /* InterferenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterferenceExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -64,8 +70,10 @@
 			isa = PBXGroup;
 			children = (
 				BFB75D0929638E4600424379 /* ContentView.swift */,
-				BFB75D1B2963947600424379 /* UploadPage.swift */,
+				BFB75D1B2963947600424379 /* UploadView.swift */,
+				BF54F5352967170E00FC56C0 /* RealTimeView.swift */,
 				BFB75D1D2963949F00424379 /* ImagePicker.swift */,
+				BF54F537296718CD00FC56C0 /* VideoCapture.swift */,
 				BFB75D0729638E4600424379 /* CorneAI_ios_ver3App.swift */,
 				BFB75D152963911C00424379 /* last.mlmodel */,
 				BFB75D252964445400424379 /* Extension */,
@@ -87,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				BFB75D2329642A3C00424379 /* InterferenceExtension.swift */,
+				BF54F53B2969AFDB00FC56C0 /* ScreenShotExtension.swift */,
 				BFB75D172963915C00424379 /* UIImageExtension.swift */,
 				BFB75D19296393E800424379 /* UIImage+Extension.swift */,
 			);
@@ -166,11 +175,14 @@
 				BFB75D0A29638E4600424379 /* ContentView.swift in Sources */,
 				BFB75D0829638E4600424379 /* CorneAI_ios_ver3App.swift in Sources */,
 				BFB75D1A296393E800424379 /* UIImage+Extension.swift in Sources */,
+				BF54F5362967170E00FC56C0 /* RealTimeView.swift in Sources */,
 				BFB75D1E2963949F00424379 /* ImagePicker.swift in Sources */,
 				BFB75D2429642A3C00424379 /* InterferenceExtension.swift in Sources */,
+				BF54F53C2969AFDB00FC56C0 /* ScreenShotExtension.swift in Sources */,
+				BF54F538296718CD00FC56C0 /* VideoCapture.swift in Sources */,
 				BFB75D162963911C00424379 /* last.mlmodel in Sources */,
 				BFB75D182963915C00424379 /* UIImageExtension.swift in Sources */,
-				BFB75D1C2963947600424379 /* UploadPage.swift in Sources */,
+				BFB75D1C2963947600424379 /* UploadView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
