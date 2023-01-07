@@ -18,6 +18,9 @@ struct UploadView: View {
     @State var result: (String, [Double]) = ("", [0,0,0,0]) //confidence, coordinate
     let model = try? last(configuration: MLModelConfiguration())
     
+    @State private var rect: CGRect = .zero //スクリーンショット用
+    @State var screenImage: UIImage? = nil //スクリーンショット用
+    
     
     var body: some View {
         GeometryReader{geometry in
@@ -127,11 +130,22 @@ struct UploadView: View {
                     .fontWeight(.bold)
                     .padding(.bottom)
                 
+                //screenshot button
+                if image != nil {
+                    Button("screenshot"){
+                        //classifyImage(image: image!)
+                        self.screenImage = UIApplication.shared.windows[0].rootViewController?.view!.getImage(rect: self.rect) //ここがうまくいっていない
+                        UIImageWriteToSavedPhotosAlbum(screenImage!, nil, nil, nil)
+                        //print("screenshot done!")
+                    }
+                }
+                
                 
             }.sheet(isPresented: $showingImagePicker) {
                 ImagePicker(sourceType: self.$sourceType, selectedImage: $image)
         }
         }
+        .background(RectangleGetter(rect: $rect))
     }
 }
 

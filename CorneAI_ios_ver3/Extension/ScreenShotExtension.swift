@@ -4,7 +4,7 @@
 //
 //  Created by Yoshiyuki Kitaguchi on 2023/01/07.
 //  https://qiita.com/WONQ/items/6120918ead6f3480fbad
-//
+//  https://qiita.com/tsuzuki817/items/a3d2470ba9df07ed0d99
 //  UIImageWriteToSavedPhotosAlbum(inputImage, nil, nil, nil)
 
 
@@ -55,25 +55,6 @@ class ImageSaver: NSObject {
             print("保存に失敗しました。")
         } else {
             showAlert = true
-        }
-    }
-}
-
-
-
-extension View {
-    func snapshot() -> UIImage {
-        let controller = UIHostingController(rootView: self)
-        let view = controller.view
-        
-        let targetSize = controller.view.intrinsicContentSize
-        view?.bounds = CGRect(origin: .zero, size: targetSize)
-        view?.backgroundColor = .clear
-        
-        let renderer = UIGraphicsImageRenderer(size: targetSize)
-        
-        return renderer.image { _ in
-            view?.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
         }
     }
 }

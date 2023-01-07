@@ -33,16 +33,6 @@ struct RealTimeView: View {
                     .resizable()
                     .scaledToFit()
             }
-
-            if image != nil {
-                Button("screenshot"){
-                    //classifyImage(image: image!)
-                    self.screenImage = UIApplication.shared.windows[0].rootViewController?.view!.getImage(rect: self.rect) //ここがうまくいっていない
-                    UIImageWriteToSavedPhotosAlbum(screenImage!, nil, nil, nil)
-                    print("screenshot done!")
-                }
-                .font(.largeTitle)
-            }
             
             //show results
             if image != nil {
@@ -51,6 +41,19 @@ struct RealTimeView: View {
                     .fontWeight(.bold)
                     .padding(.bottom)
             }
+            
+            //screenshot button
+            if image != nil {
+                Button("screenshot"){
+                    //classifyImage(image: image!)
+                    self.screenImage = UIApplication.shared.windows[0].rootViewController?.view!.getImage(rect: self.rect) //ここがうまくいっていない
+                    UIImageWriteToSavedPhotosAlbum(screenImage!, nil, nil, nil)
+                    //print("screenshot done!")
+                }
+                .font(.largeTitle)
+            }
+            
+
             
         }
         .onAppear{
@@ -63,6 +66,7 @@ struct RealTimeView: View {
             }
         }
         .onDisappear(perform: videoCapture.stop)
+        .background(RectangleGetter(rect: $rect))
     }
 
     func UIImageFromSampleBuffer(_ sampleBuffer: CMSampleBuffer) -> UIImage? {
