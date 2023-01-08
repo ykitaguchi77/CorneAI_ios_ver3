@@ -10,6 +10,8 @@
 		BF54F5362967170E00FC56C0 /* RealTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF54F5352967170E00FC56C0 /* RealTimeView.swift */; };
 		BF54F538296718CD00FC56C0 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF54F537296718CD00FC56C0 /* VideoCapture.swift */; };
 		BF54F53C2969AFDB00FC56C0 /* ScreenShotExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF54F53B2969AFDB00FC56C0 /* ScreenShotExtension.swift */; };
+		BF54F53E296A3E0700FC56C0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF54F53D296A3E0700FC56C0 /* GoogleService-Info.plist */; };
+		BF54F541296A413600FC56C0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BF54F540296A413600FC56C0 /* FirebaseAnalytics */; };
 		BFB75D0829638E4600424379 /* CorneAI_ios_ver3App.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D0729638E4600424379 /* CorneAI_ios_ver3App.swift */; };
 		BFB75D0A29638E4600424379 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D0929638E4600424379 /* ContentView.swift */; };
 		BFB75D0C29638E4800424379 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFB75D0B29638E4800424379 /* Assets.xcassets */; };
@@ -26,6 +28,7 @@
 		BF54F5352967170E00FC56C0 /* RealTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTimeView.swift; sourceTree = "<group>"; };
 		BF54F537296718CD00FC56C0 /* VideoCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
 		BF54F53B2969AFDB00FC56C0 /* ScreenShotExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenShotExtension.swift; sourceTree = "<group>"; };
+		BF54F53D296A3E0700FC56C0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BFB75D0429638E4600424379 /* CorneAI_ios_ver3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CorneAI_ios_ver3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFB75D0729638E4600424379 /* CorneAI_ios_ver3App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorneAI_ios_ver3App.swift; sourceTree = "<group>"; };
 		BFB75D0929638E4600424379 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -44,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF54F541296A413600FC56C0 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +82,7 @@
 				BFB75D152963911C00424379 /* last.mlmodel */,
 				BFB75D252964445400424379 /* Extension */,
 				BFB75D0B29638E4800424379 /* Assets.xcassets */,
+				BF54F53D296A3E0700FC56C0 /* GoogleService-Info.plist */,
 				BFB75D0D29638E4800424379 /* Preview Content */,
 			);
 			path = CorneAI_ios_ver3;
@@ -118,6 +123,9 @@
 			dependencies = (
 			);
 			name = CorneAI_ios_ver3;
+			packageProductDependencies = (
+				BF54F540296A413600FC56C0 /* FirebaseAnalytics */,
+			);
 			productName = CorneAI_ios_ver3;
 			productReference = BFB75D0429638E4600424379 /* CorneAI_ios_ver3.app */;
 			productType = "com.apple.product-type.application";
@@ -146,6 +154,9 @@
 				Base,
 			);
 			mainGroup = BFB75CFB29638E4500424379;
+			packageReferences = (
+				BF54F53F296A413600FC56C0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = BFB75D0529638E4600424379 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -162,6 +173,7 @@
 			files = (
 				BFB75D0F29638E4800424379 /* Preview Assets.xcassets in Resources */,
 				BFB75D0C29638E4800424379 /* Assets.xcassets in Resources */,
+				BF54F53E296A3E0700FC56C0 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,6 +399,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BF54F53F296A413600FC56C0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BF54F540296A413600FC56C0 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BF54F53F296A413600FC56C0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BFB75CFC29638E4500424379 /* Project object */;
 }
