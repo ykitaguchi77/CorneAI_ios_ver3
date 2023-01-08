@@ -37,19 +37,23 @@ class Yolov5Interference: ObservableObject {
         var dict: [String:String] = [:]
         // Get length
         let length = mlMultiArray.count
-
         if length == 9 {   //0でないことの確認、および時々処理の問題で18になりエラーになるのでチェック
             // Set content of multi array to our out put array
             for i in 0...length - 1 {
                 array.append(Double(truncating: mlMultiArray[[0,NSNumber(value: i)]]))
             }
+            
             //select Top3 indices and value
             for i in 0 ... length - 1 {
-                dict.updateValue(String(array[i]), forKey: classes[i])
+                dict.updateValue(String(format: "%.3f", array[i]), forKey: classes[i])
             }
+            print(array)
+            print(dict)
             
             //sort array in ascending order and slice the top3
             let sortData = dict.sorted{ $0.1 > $1.1 } .map { $0 }[0...2]
+            
+            print(sortData)
             
             //output the result as string
             let message = sortData.map { (key, value) in
