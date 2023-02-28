@@ -24,7 +24,9 @@ struct RealTimeView: View {
     
     @State private var rect: CGRect = .zero //スクリーンショット用
     @State var screenImage: UIImage? = nil //スクリーンショット用
-  
+    @State var timer: Timer? //結果を0.5秒間隔で出力するためのタイマー
+    @State var inferenceResult: String = ""
+
     
     var body: some View {
         VStack {
@@ -36,11 +38,18 @@ struct RealTimeView: View {
             
             //show results
             if image != nil {
-                Text("\(Yolov5Interference(image: image!).classify().0)")
+                Text("\(inferenceResult)")
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.bottom)
+                    .onAppear(perform: startInferenceTimer)
             }
+//            if image != nil {
+//                Text("\(Yolov5Interference(image: image!).classify().0)")
+//                    .font(.title)
+//                    .fontWeight(.bold)
+//                    .padding(.bottom)
+//            }
             
             //screenshot button
             if image != nil {
@@ -84,7 +93,15 @@ struct RealTimeView: View {
     }
     
 
-    
+    func startInferenceTimer() {
+        // もしすでにタイマーが起動していた場合は停止する
+        timer?.invalidate()
+
+        // 0.5秒ごとに推論を行うタイマーを起動する
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            inferenceResult = Yolov5Interference(image: image!).classify().0
+        }
+    }
 
 
 //    private func classifyImage(image: UIImage) {

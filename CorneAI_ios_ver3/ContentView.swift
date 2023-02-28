@@ -14,6 +14,7 @@ class User : ObservableObject {
     @Published var sourceType: UIImagePickerController.SourceType = .camera
     @Published var image: UIImage?
     @Published var samplePhotos = ["infection", "normal", "non-infection", "scar", "tumor", "deposit", "APAC", "lens-opacity", "bullous"]
+    @Published var classes = ["infection", "normal", "non-infection", "scar", "tumor", "deposit", "APAC", "lens-opacity", "bullous"]
     //撮影モードがデフォルト
     }
 

@@ -91,10 +91,10 @@ struct UploadView: View {
                     Button(action: {
                         if image == nil{
                             let yolov5Interference = Yolov5Interference(image: UIImage(imageLiteralResourceName: samplePhotos[currentIndex]))
-                            result = yolov5Interference.classify()
+                            //result = yolov5Interference.classify()
                         } else {
                             let yolov5Interference = Yolov5Interference(image: image!)
-                            result = yolov5Interference.classify()
+                            //result = yolov5Interference.classify()
                         }
                         
                     }){

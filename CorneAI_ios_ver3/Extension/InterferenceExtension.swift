@@ -20,14 +20,17 @@ class Yolov5Interference: ObservableObject {
         self.image = image
     }
     
+    
     func classify() -> (confidence: String, coordinates: [Double]){
+        
         let resizedImage = self.image.resizeImageTo(size:size)
-        let buffer = resizedImage!.convertToBuffer()
+        
+        let buffer = resizedImage?.convertToBuffer()
         
         let output = try? model!.prediction(image: buffer!, iouThreshold: 0.45, confidenceThreshold: 0.3)
         let confidence = convertToClass(from: output!.confidence)
         let coordinates = convertToCoordinates(from: output!.coordinates)
-        //print("confidence: \(String(describing: confidence)), coordinates: \(String(describing: coordinates))")
+        
         return (confidence, coordinates) //戻り値はtuple
     }
     
@@ -45,15 +48,15 @@ class Yolov5Interference: ObservableObject {
             
             //select Top3 indices and value
             for i in 0 ... length - 1 {
-                dict.updateValue(String(format: "%.3f", array[i]), forKey: classes[i])
+                dict.updateValue(String(format: "%.2f", array[i]), forKey: classes[i])
             }
-            print(array)
+            //print(array)
             print(dict)
             
             //sort array in ascending order and slice the top3
             let sortData = dict.sorted{ $0.1 > $1.1 } .map { $0 }[0...2]
             
-            print(sortData)
+            //print(sortData)
             
             //output the result as string
             let message = sortData.map { (key, value) in
@@ -61,10 +64,10 @@ class Yolov5Interference: ObservableObject {
             }.joined(separator: "\n")
             return message
             
-            } else {
-                let message = "no cornea detected \n \n"
-                return message
-            }
+        } else {
+            let message = "no cornea detected \n \n"
+            return message
+        }
     }
     
     func convertToCoordinates(from mlMultiArray: MLMultiArray) -> [Double] {
