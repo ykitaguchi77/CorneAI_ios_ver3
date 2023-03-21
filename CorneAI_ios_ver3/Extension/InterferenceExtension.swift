@@ -28,6 +28,7 @@ class Yolov5Interference: ObservableObject {
         let buffer = resizedImage?.convertToBuffer()
         
         let output = try? model!.prediction(image: buffer!, iouThreshold: 0.45, confidenceThreshold: 0.3)
+        print(output!.confidence)
         let confidence = convertToClass(from: output!.confidence)
         let coordinates = convertToCoordinates(from: output!.coordinates)
         
@@ -51,7 +52,7 @@ class Yolov5Interference: ObservableObject {
                 dict.updateValue(String(format: "%.2f", array[i]), forKey: classes[i])
             }
             //print(array)
-            print(dict)
+            //print(dict)
             
             //sort array in ascending order and slice the top3
             let sortData = dict.sorted{ $0.1 > $1.1 } .map { $0 }[0...2]
