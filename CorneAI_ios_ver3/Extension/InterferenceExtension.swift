@@ -49,7 +49,7 @@ class Yolov5Interference: ObservableObject {
             
             //select Top3 indices and value
             for i in 0 ... length - 1 {
-                dict.updateValue(String(format: "%.2f", array[i]), forKey: classes[i])
+                dict.updateValue(String(format: "%.3f", array[i]), forKey: classes[i])
             }
             //print(array)
             //print(dict)
@@ -61,7 +61,7 @@ class Yolov5Interference: ObservableObject {
             
             //output the result as string
             let message = sortData.map { (key, value) in
-                "\(key) = \(String(format: "%.2f", Double(value)! * 100))%"
+                "\(key) = \(String(format: "%.1f", Double(value)! * 100))%"
             }.joined(separator: "\n")
             return message
             
