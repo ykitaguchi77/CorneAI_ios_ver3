@@ -21,21 +21,33 @@ struct RealTimeView: View {
     @State var samplePhotos = ["infection", "normal", "non-infection", "scar", "tumor", "deposit", "APAC", "lens-opacity", "bullous"]
     @State var result: (String, [Double]) = ("", [0,0,0,0]) //confidence, coordinate
     let videoCapture = VideoCapture()
-    
+
     @State private var rect: CGRect = .zero //スクリーンショット用
     @State var screenImage: UIImage? = nil //スクリーンショット用
     @State var timer: Timer? //結果を0.5秒間隔で出力するためのタイマー
     @State var inferenceResult: String = ""
 
-    
+    // GradCAM
+    @State private var isGradCAMEnabled: Bool = false
+    @State private var gradcamImage: UIImage? = nil
+    private let gradcamComputer: GradCAMComputer? = GradCAMComputer()
+
+
     var body: some View {
         VStack {
-            if let image = image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
+            // Camera feed with optional GradCAM heatmap overlay
+            ZStack {
+                if let image = image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+
+                    if isGradCAMEnabled {
+                        GradCAMOverlayView(heatmap: gradcamImage)
+                    }
+                }
             }
-            
+
             //show results
             if image != nil {
                 Text("\(inferenceResult)")
@@ -44,26 +56,37 @@ struct RealTimeView: View {
                     .padding(.bottom)
                     .onAppear(perform: startInferenceTimer)
             }
-//            if image != nil {
-//                Text("\(Yolov5Interference(image: image!).classify().0)")
-//                    .font(.title)
-//                    .fontWeight(.bold)
-//                    .padding(.bottom)
-//            }
-            
-            //screenshot button
-            if image != nil {
-                Button("screenshot"){
-                    //classifyImage(image: image!)
-                    self.screenImage = UIApplication.shared.windows[0].rootViewController?.view!.getImage(rect: self.rect) //ここがうまくいっていない
-                    UIImageWriteToSavedPhotosAlbum(screenImage!, nil, nil, nil)
-                    //print("screenshot done!")
-                }
-                .font(.largeTitle)
-            }
-            
 
-            
+            //screenshot and GradCAM buttons
+            if image != nil {
+                HStack {
+                    Button("screenshot"){
+                        self.screenImage = UIApplication.shared.windows[0].rootViewController?.view!.getImage(rect: self.rect)
+                        UIImageWriteToSavedPhotosAlbum(screenImage!, nil, nil, nil)
+                    }
+                    .font(.largeTitle)
+
+                    Spacer()
+
+                    Button(action: {
+                        isGradCAMEnabled.toggle()
+                        if !isGradCAMEnabled {
+                            gradcamImage = nil
+                        }
+                    }) {
+                        Text("GradCAM")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(isGradCAMEnabled ? Color.red.opacity(0.6) : Color.gray.opacity(0.4))
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                }
+                .padding(.horizontal)
+            }
+
         }
         .onAppear{
             videoCapture.run { sampleBuffer in
@@ -99,7 +122,19 @@ struct RealTimeView: View {
 
         // 0.5秒ごとに推論を行うタイマーを起動する
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            inferenceResult = Yolov5Interference(image: image!).classify().0
+            guard let currentImage = image else { return }
+
+            if isGradCAMEnabled, let computer = gradcamComputer {
+                // Single inference: classification + heatmap from CAM model
+                if let result = computer.classifyWithCAM(image: currentImage) {
+                    inferenceResult = result.confidenceText
+                    gradcamImage = result.heatmap
+                }
+            } else {
+                // Standard inference (original model, no feature map overhead)
+                inferenceResult = Yolov5Interference(image: currentImage).classify().0
+                gradcamImage = nil
+            }
         }
     }
 

@@ -22,6 +22,11 @@
 		BFB75D1C2963947600424379 /* UploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D1B2963947600424379 /* UploadView.swift */; };
 		BFB75D1E2963949F00424379 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D1D2963949F00424379 /* ImagePicker.swift */; };
 		BFB75D2429642A3C00424379 /* InterferenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB75D2329642A3C00424379 /* InterferenceExtension.swift */; };
+		CF0CA102296E000100FC56C0 /* GradCAMWeights.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0CA101296E000100FC56C0 /* GradCAMWeights.swift */; };
+		CF0CA104296E000100FC56C0 /* GradCAMComputer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0CA103296E000100FC56C0 /* GradCAMComputer.swift */; };
+		CF0CA106296E000100FC56C0 /* GradCAMOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0CA105296E000100FC56C0 /* GradCAMOverlayView.swift */; };
+		CF0CA108296E000100FC56C0 /* last_cam.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = CF0CA107296E000100FC56C0 /* last_cam.mlmodel */; };
+		CF0CA10A296E000100FC56C0 /* cam_weights.json in Resources */ = {isa = PBXBuildFile; fileRef = CF0CA109296E000100FC56C0 /* cam_weights.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +45,11 @@
 		BFB75D1B2963947600424379 /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
 		BFB75D1D2963949F00424379 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		BFB75D2329642A3C00424379 /* InterferenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterferenceExtension.swift; sourceTree = "<group>"; };
+		CF0CA101296E000100FC56C0 /* GradCAMWeights.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradCAMWeights.swift; sourceTree = "<group>"; };
+		CF0CA103296E000100FC56C0 /* GradCAMComputer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradCAMComputer.swift; sourceTree = "<group>"; };
+		CF0CA105296E000100FC56C0 /* GradCAMOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradCAMOverlayView.swift; sourceTree = "<group>"; };
+		CF0CA107296E000100FC56C0 /* last_cam.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = last_cam.mlmodel; sourceTree = "<group>"; };
+		CF0CA109296E000100FC56C0 /* cam_weights.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cam_weights.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,7 +89,12 @@
 				BFB75D1D2963949F00424379 /* ImagePicker.swift */,
 				BF54F537296718CD00FC56C0 /* VideoCapture.swift */,
 				BFB75D0729638E4600424379 /* CorneAI_ios_ver3App.swift */,
+				CF0CA101296E000100FC56C0 /* GradCAMWeights.swift */,
+				CF0CA103296E000100FC56C0 /* GradCAMComputer.swift */,
+				CF0CA105296E000100FC56C0 /* GradCAMOverlayView.swift */,
 				BFB75D152963911C00424379 /* last.mlmodel */,
+				CF0CA107296E000100FC56C0 /* last_cam.mlmodel */,
+				CF0CA109296E000100FC56C0 /* cam_weights.json */,
 				BFB75D252964445400424379 /* Extension */,
 				BFB75D0B29638E4800424379 /* Assets.xcassets */,
 				BF54F53D296A3E0700FC56C0 /* GoogleService-Info.plist */,
@@ -174,6 +189,7 @@
 				BFB75D0F29638E4800424379 /* Preview Assets.xcassets in Resources */,
 				BFB75D0C29638E4800424379 /* Assets.xcassets in Resources */,
 				BF54F53E296A3E0700FC56C0 /* GoogleService-Info.plist in Resources */,
+				CF0CA10A296E000100FC56C0 /* cam_weights.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,8 +209,12 @@
 				BF54F53C2969AFDB00FC56C0 /* ScreenShotExtension.swift in Sources */,
 				BF54F538296718CD00FC56C0 /* VideoCapture.swift in Sources */,
 				BFB75D162963911C00424379 /* last.mlmodel in Sources */,
+				CF0CA108296E000100FC56C0 /* last_cam.mlmodel in Sources */,
 				BFB75D182963915C00424379 /* UIImageExtension.swift in Sources */,
 				BFB75D1C2963947600424379 /* UploadView.swift in Sources */,
+				CF0CA102296E000100FC56C0 /* GradCAMWeights.swift in Sources */,
+				CF0CA104296E000100FC56C0 /* GradCAMComputer.swift in Sources */,
+				CF0CA106296E000100FC56C0 /* GradCAMOverlayView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,7 +358,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "yk-gankeisei.CorneAI-ios-ver3";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -370,7 +390,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "yk-gankeisei.CorneAI-ios-ver3";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

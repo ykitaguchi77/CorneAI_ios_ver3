@@ -22,17 +22,49 @@ class Yolov5Interference: ObservableObject {
     
     
     func classify() -> (confidence: String, coordinates: [Double]){
-        
+
         let resizedImage = self.image.resizeImageTo(size:size)
-        
+
         let buffer = resizedImage?.convertToBuffer()
-        
+
         let output = try? model!.prediction(image: buffer!, iouThreshold: 0.45, confidenceThreshold: 0.3)
         print(output!.confidence)
         let confidence = convertToClass(from: output!.confidence)
         let coordinates = convertToCoordinates(from: output!.coordinates)
-        
+
         return (confidence, coordinates) //戻り値はtuple
+    }
+
+    /// Returns classification result with top class index for GradCAM use.
+    func classifyWithIndices() -> (confidence: String, topClassIndex: Int, coordinates: [Double]) {
+        let resizedImage = self.image.resizeImageTo(size: size)
+        let buffer = resizedImage?.convertToBuffer()
+
+        guard let output = try? model!.prediction(image: buffer!, iouThreshold: 0.45, confidenceThreshold: 0.3) else {
+            return ("no cornea detected \n \n", -1, [0, 0, 0, 0])
+        }
+
+        let confidence = convertToClass(from: output.confidence)
+        let coordinates = convertToCoordinates(from: output.coordinates)
+        let topIndex = findTopClassIndex(from: output.confidence)
+
+        return (confidence, topIndex, coordinates)
+    }
+
+    func findTopClassIndex(from mlMultiArray: MLMultiArray) -> Int {
+        let length = mlMultiArray.count
+        guard length == 9 else { return -1 }
+
+        var topIndex = 0
+        var topValue: Double = -1
+        for i in 0..<length {
+            let val = Double(truncating: mlMultiArray[[0, NSNumber(value: i)]])
+            if val > topValue {
+                topValue = val
+                topIndex = i
+            }
+        }
+        return topIndex
     }
     
     func convertToClass(from mlMultiArray: MLMultiArray) -> String {
