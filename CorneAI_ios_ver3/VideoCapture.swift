@@ -48,6 +48,16 @@ class VideoCapture: NSObject {
 
 
     
+    func updateOrientation(_ orientation: AVCaptureVideoOrientation) {
+        for output in captureSession.outputs {
+            for connection in output.connections {
+                if connection.isVideoOrientationSupported {
+                    connection.videoOrientation = orientation
+                }
+            }
+        }
+    }
+
     func run(_ handler: @escaping (CMSampleBuffer) -> Void)  {
         if !captureSession.isRunning {
             self.handler = handler
