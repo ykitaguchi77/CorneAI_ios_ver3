@@ -9,14 +9,22 @@ import AVFoundation
 
 class VideoCapture: NSObject {
     let captureSession = AVCaptureSession()
-    var handler: ((CMSampleBuffer) -> Void)?
+    private var handler: ((CMSampleBuffer) -> Void)?
+
+    /// セッションの設定・開始・停止はすべてこのキュー上で行う。
+    /// メインスレッドで startRunning/stopRunning すると UI が数百 ms 止まる。
+    private let sessionQueue = DispatchQueue(label: "corneai.camera.session")
+    /// フレーム配信用。推論結果の表示を待たせないよう userInitiated にする。
+    private let frameQueue = DispatchQueue(label: "corneai.camera.frames", qos: .userInitiated)
 
     override init() {
         super.init()
-        setup()
+        sessionQueue.async {
+            self.setup()
+        }
     }
 
-    func setup() {
+    private func setup() {
         captureSession.beginConfiguration()
         let device = defaultCamera() //使用するカメラは後のfuncで定義
 //        let device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
@@ -30,7 +38,7 @@ class VideoCapture: NSObject {
         
 
         let videoDataOutput = AVCaptureVideoDataOutput()
-        videoDataOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "mydispatchqueue"))
+        videoDataOutput.setSampleBufferDelegate(self, queue: frameQueue)
         videoDataOutput.alwaysDiscardsLateVideoFrames = true
 
         guard captureSession.canAddOutput(videoDataOutput) else { return }
@@ -49,29 +57,35 @@ class VideoCapture: NSObject {
 
     
     func updateOrientation(_ orientation: AVCaptureVideoOrientation) {
-        for output in captureSession.outputs {
-            for connection in output.connections {
-                if connection.isVideoOrientationSupported {
-                    connection.videoOrientation = orientation
+        sessionQueue.async {
+            for output in self.captureSession.outputs {
+                for connection in output.connections {
+                    if connection.isVideoOrientationSupported {
+                        connection.videoOrientation = orientation
+                    }
                 }
             }
         }
     }
 
+    /// フレームごとに handler を呼ぶ(frameQueue 上で実行される)
     func run(_ handler: @escaping (CMSampleBuffer) -> Void)  {
-        if !captureSession.isRunning {
-            self.handler = handler
-            DispatchQueue.global(qos: .background).async {
+        // handler は delegate と同じ frameQueue 上で読み書きしてデータ競合を避ける
+        frameQueue.async { self.handler = handler }
+        sessionQueue.async {
+            if !self.captureSession.isRunning {
                 self.captureSession.startRunning()
             }
-
         }
     }
 
     func stop() {
-        if captureSession.isRunning {
-            captureSession.stopRunning()
+        sessionQueue.async {
+            if self.captureSession.isRunning {
+                self.captureSession.stopRunning()
+            }
         }
+        frameQueue.async { self.handler = nil }
     }
     
     func defaultCamera() -> AVCaptureDevice? {

@@ -19,7 +19,8 @@ class User : ObservableObject {
     }
 
 struct ContentView: View {
-    @ObservedObject var user = User()
+    // @StateObject にしないと ContentView の再生成ごとに User が作り直される
+    @StateObject private var user = User()
     @State private var goTakePhoto: Bool = false //判定スタートボタン
     @State private var showSettings: Bool = false //設定シート表示
     @AppStorage("isGradCAMAvailable") private var isGradCAMAvailable: Bool = false //GradCAM機能の有効/無効(デフォルトは無効)

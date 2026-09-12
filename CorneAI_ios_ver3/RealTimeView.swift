@@ -11,29 +11,26 @@ import AVFoundation
 
 
 struct RealTimeView: View {
-    // define model
-    let model = try? last(configuration: MLModelConfiguration())
-
     @ObservedObject var user: User
-    @State private var image: UIImage?
-    @State private var isStreaming: Bool = true
-    @State var showAlert = false
-    @State var samplePhotos = ["infection", "normal", "non-infection", "scar", "tumor", "deposit", "APAC", "lens-opacity", "bullous"]
-    @State var result: (String, [Double]) = ("", [0,0,0,0]) //confidence, coordinate
-    let videoCapture = VideoCapture()
+
+    // カメラ・モデル・推論ループは engine が所有する。
+    // @StateObject なので View がツリーに載ったときに 1 回だけ生成され、
+    // ContentView の再描画(NavigationLink の destination 再評価)では作り直されない。
+    @StateObject private var engine = RealTimeInferenceEngine()
 
     @State private var rect: CGRect = .zero //スクリーンショット用
     @State var screenImage: UIImage? = nil //スクリーンショット用
-    @State var timer: Timer? //結果を0.5秒間隔で出力するためのタイマー
-    @State var inferenceResult: String = ""
 
     // GradCAM
     @AppStorage("isGradCAMAvailable") private var isGradCAMAvailable: Bool = false //設定画面で切り替え(デフォルトは無効)
     @State private var isGradCAMEnabled: Bool = false
-    @State private var gradcamImage: UIImage? = nil
-    private let gradcamComputer: GradCAMComputer? = GradCAMComputer()
 
     @Environment(\.verticalSizeClass) var verticalSizeClass
+
+    // 旧コードの `image` / `inferenceResult` / `gradcamImage` に対応
+    private var image: UIImage? { engine.previewImage }
+    private var inferenceResult: String { engine.resultText }
+    private var gradcamImage: UIImage? { engine.heatmap }
 
     var body: some View {
         Group {
@@ -47,23 +44,23 @@ struct RealTimeView: View {
             //設定でGradCAMが無効なら、前回のオン状態を解除しておく
             if !isGradCAMAvailable {
                 isGradCAMEnabled = false
-                gradcamImage = nil
             }
-            videoCapture.run { sampleBuffer in
-                if let convertImage = UIImageFromSampleBuffer(sampleBuffer) {
-                    DispatchQueue.main.async {
-                        self.image = convertImage
-                    }
-                }
-            }
+            engine.isGradCAMEnabled = isGradCAMEnabled
+            engine.camera.updateOrientation(verticalSizeClass == .compact ? .landscapeRight : .portrait)
+            engine.start()
         }
-        .onDisappear(perform: videoCapture.stop)
+        .onDisappear {
+            engine.stop()
+        }
         .background(RectangleGetter(rect: $rect))
+        .onChange(of: isGradCAMEnabled) { newValue in
+            engine.isGradCAMEnabled = newValue
+        }
         .onChange(of: verticalSizeClass) { newValue in
             if newValue == .compact {
-                videoCapture.updateOrientation(.landscapeRight)
+                engine.camera.updateOrientation(.landscapeRight)
             } else {
-                videoCapture.updateOrientation(.portrait)
+                engine.camera.updateOrientation(.portrait)
             }
         }
     }
@@ -88,7 +85,6 @@ struct RealTimeView: View {
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.bottom)
-                    .onAppear(perform: startInferenceTimer)
             }
 
             if image != nil {
@@ -146,7 +142,6 @@ struct RealTimeView: View {
             }
             .aspectRatio(1, contentMode: .fit)
             .clipped()
-            .onAppear(perform: startInferenceTimer)
             .padding(.horizontal, 4)
 
             // 右: Prediction + ボタン
@@ -186,10 +181,7 @@ struct RealTimeView: View {
     // MARK: - Shared Components
     var gradcamToggleButton: some View {
         Button(action: {
-            isGradCAMEnabled.toggle()
-            if !isGradCAMEnabled {
-                gradcamImage = nil
-            }
+            isGradCAMEnabled.toggle()   // OFF 時のヒートマップ消去は engine 側で行う
         }) {
             Text("GradCAM")
                 .font(.title2)
@@ -202,34 +194,4 @@ struct RealTimeView: View {
         }
     }
 
-    func UIImageFromSampleBuffer(_ sampleBuffer: CMSampleBuffer) -> UIImage? {
-        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
-            let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-            let imageRect = CGRect(x: 0, y: 0, width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer))
-            let context = CIContext()
-            if let image = context.createCGImage(ciImage, from: imageRect) {
-                let cropped = image.cropToSquare()
-                return UIImage(cgImage: cropped)
-            }
-        }
-        return nil
-    }
-
-    func startInferenceTimer() {
-        timer?.invalidate()
-
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            guard let currentImage = image else { return }
-
-            if isGradCAMEnabled, let computer = gradcamComputer {
-                if let result = computer.classifyWithCAM(image: currentImage) {
-                    inferenceResult = result.confidenceText
-                    gradcamImage = result.heatmap
-                }
-            } else {
-                inferenceResult = Yolov5Interference(image: currentImage).classify().0
-                gradcamImage = nil
-            }
-        }
-    }
 }

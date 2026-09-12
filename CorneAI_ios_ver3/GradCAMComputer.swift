@@ -66,38 +66,16 @@ class GradCAMComputer {
             return nil
         }
 
-        let length = confidenceArray.count
-        guard length == 9 else {
+        // 分類結果の文字列化は通常経路と共通のロジックを使う(表示の食い違い防止)
+        let topIndex = ClassificationFormatter.topClassIndex(from: confidenceArray)
+        guard topIndex >= 0 else {
             return GradCAMResult(
                 classIndex: -1,
-                confidenceText: "no cornea detected \n \n",
+                confidenceText: ClassificationFormatter.noDetectionMessage,
                 heatmap: nil
             )
         }
-
-        // Parse confidences and find top class
-        var array: [Double] = []
-        var topIndex = 0
-        var topValue: Double = -1
-        for i in 0..<length {
-            let val = Double(truncating: confidenceArray[[0, NSNumber(value: i)]])
-            array.append(val)
-            if val > topValue {
-                topValue = val
-                topIndex = i
-            }
-        }
-
-        // Format confidence string (matching Yolov5Interference format)
-        let classes = weights.classes
-        var dict: [String: String] = [:]
-        for i in 0..<length {
-            dict[classes[i]] = String(format: "%.2f", array[i])
-        }
-        let sortData = dict.sorted { $0.1 > $1.1 }.map { $0 }[0...2]
-        let confidenceText = sortData.map { (key, value) in
-            "\(key) = \(String(format: "%.2f", Double(value)! * 100))%"
-        }.joined(separator: "\n")
+        let confidenceText = ClassificationFormatter.confidenceText(from: confidenceArray)
 
         // Extract bounding box for masking (normalized [0,1] coords: cx, cy, w, h)
         var bbox: CGRect? = nil
@@ -111,8 +89,7 @@ class GradCAMComputer {
         }
 
         // Compute CAM heatmap for top-1 class, masked to bbox
-        let heatmap = computeHeatmapFromOutput(output: output, classIndex: topIndex,
-                                                bbox: bbox, imageSize: image.size)
+        let heatmap = computeHeatmapFromOutput(output: output, classIndex: topIndex, bbox: bbox)
 
         return GradCAMResult(
             classIndex: topIndex,
@@ -125,7 +102,7 @@ class GradCAMComputer {
 
     /// - Parameter bbox: Normalized [0,1] bounding box (x, y, w, h). If provided, heatmap is masked outside this region.
     private func computeHeatmapFromOutput(output: MLFeatureProvider, classIndex: Int,
-                                           bbox: CGRect?, imageSize: CGSize) -> UIImage? {
+                                           bbox: CGRect?) -> UIImage? {
         var combinedMap: [Float]? = nil
 
         for (scaleIdx, scaleConfig) in weights.scales.enumerated() {
@@ -177,7 +154,7 @@ class GradCAMComputer {
             vDSP_vsdiv(cam, 1, &maxVal, &cam, 1, vDSP_Length(cam.count))
         }
 
-        return createHeatmapImage(from: cam, width: targetW, height: targetH, imageSize: imageSize)
+        return createHeatmapImage(from: cam, width: targetW, height: targetH)
     }
 
     /// Zero out CAM values outside the bounding box.
@@ -211,6 +188,18 @@ class GradCAMComputer {
                 // result += w * feature[k, :, :]
                 vDSP_vsma(ptr + k * spatialSize, 1, &w, result, 1, &result, 1,
                           vDSP_Length(spatialSize))
+            }
+        } else if featureArray.dataType == .double {
+            // Fast path for Double (last_cam の feature_p3/p4/p5 は Double 出力)。
+            // チャネルごとに Float へ変換してから加算するので、下のフォールバックと同じ
+            // 順序・同じ精度で計算される(結果は一致)。NSNumber ボクシングを避けるため約100倍速い。
+            let ptr = featureArray.dataPointer.bindMemory(to: Double.self,
+                                                           capacity: channels * spatialSize)
+            var channelF = [Float](repeating: 0, count: spatialSize)
+            for k in 0..<channels {
+                var w = weights[k]
+                vDSP_vdpsp(ptr + k * spatialSize, 1, &channelF, 1, vDSP_Length(spatialSize))
+                vDSP_vsma(channelF, 1, &w, result, 1, &result, 1, vDSP_Length(spatialSize))
             }
         } else {
             // Fallback: element-by-element access (handles Float16 and other types)
@@ -259,7 +248,9 @@ class GradCAMComputer {
 
     // MARK: - JET Colormap & Image Generation
 
-    private func createHeatmapImage(from cam: [Float], width: Int, height: Int, imageSize: CGSize) -> UIImage? {
+    /// 80x80 のヒートマップ画像を返す。表示側(GradCAMOverlayView)が SwiftUI で拡大するので、
+    /// ここでカメラ解像度に引き伸ばす必要はない(以前は毎回 ~40MB のビットマップを描画していた)。
+    private func createHeatmapImage(from cam: [Float], width: Int, height: Int) -> UIImage? {
         let pixelCount = width * height
         var pixelData = [UInt8](repeating: 0, count: pixelCount * 4)  // RGBA
 
@@ -289,13 +280,7 @@ class GradCAMComputer {
             return nil
         }
 
-        // Resize heatmap to match the original image size
-        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
-        UIImage(cgImage: cgImage).draw(in: CGRect(origin: .zero, size: imageSize))
-        let result = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return result
+        return UIImage(cgImage: cgImage)
     }
 
     /// JET colormap: blue (low) -> cyan -> green -> yellow -> red (high)

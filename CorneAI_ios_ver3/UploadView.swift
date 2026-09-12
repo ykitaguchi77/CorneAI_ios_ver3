@@ -16,8 +16,7 @@ struct UploadView: View {
     @State var currentIndex: Int = 0
     @State var samplePhotos = ["infection", "normal", "non-infection", "scar", "tumor", "deposit", "APAC", "lens-opacity", "bullous"]
     @State var result: (String, [Double]) = ("", [0,0,0,0]) //confidence, coordinate
-    let model = try? last(configuration: MLModelConfiguration())
-    
+
     @State private var rect: CGRect = .zero //スクリーンショット用
     @State var screenImage: UIImage? = nil //スクリーンショット用
     
@@ -90,16 +89,13 @@ struct UploadView: View {
                     //Interference
                     Button(action: {
                         // 保存画像は読影者が構え直せないため、視野を捨てないよう letterbox で前処理する
-                        let inputSize = CGSize(width: 640, height: 640)
-                        if image == nil{
-                            let sample = UIImage(imageLiteralResourceName: samplePhotos[currentIndex])
-                            let yolov5Interference = Yolov5Interference(image: sample.letterboxed(to: inputSize) ?? sample)
-                            result = yolov5Interference.classify()
-                        } else {
-                            let yolov5Interference = Yolov5Interference(image: image!.letterboxed(to: inputSize) ?? image!)
-                            result = yolov5Interference.classify()
-                        }
-       
+                        let inputSize = CornealClassifier.inputSize
+                        let source = image ?? UIImage(imageLiteralResourceName: samplePhotos[currentIndex])
+                        let boxed = source.letterboxed(to: inputSize) ?? source
+                        // モデルは ModelStore が 1 回だけロードして保持している(ボタンごとの再ロードなし)
+                        result = ModelStore.classifier?.classify(image: boxed)
+                            ?? (ClassificationFormatter.noDetectionMessage, [0, 0, 0, 0])
+
                     }){
                         Text("classify")
                     }

@@ -14,6 +14,7 @@ struct GradCAMOverlayView: View {
         if let heatmap = heatmap {
             Image(uiImage: heatmap)
                 .resizable()
+                .interpolation(.high)   // 80x80 のヒートマップを滑らかに拡大する
                 .scaledToFit()
                 .allowsHitTesting(false)
         }
