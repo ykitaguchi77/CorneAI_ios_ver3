@@ -24,6 +24,15 @@ enum ModelStore {
         return CornealClassifier(model: model)
     }()
 
+    /// 起動直後にバックグラウンドで分類モデルを先読みする。
+    /// ロード済みモデルは推論を呼ばない限り CPU を使わないので、タイトル画面での電力コストはない。
+    /// static let は swift_once で保護されているため、後から本スレッドがアクセスしても二重ロードしない。
+    static func warmUp() {
+        Task.detached(priority: .utility) {
+            _ = classifier
+        }
+    }
+
     private static let gradCAMLock = NSLock()
     private static var gradCAMComputer: GradCAMComputer?
     private static var gradCAMLoadAttempted = false

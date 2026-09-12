@@ -99,6 +99,10 @@ struct ContentView: View {
                 SettingsView(isGradCAMAvailable: $isGradCAMAvailable)
             }
         }
+        .onAppear {
+            // 分類モデルを先読みしておき、初回推論の待ち時間をなくす
+            ModelStore.warmUp()
+        }
     }
 }
 
