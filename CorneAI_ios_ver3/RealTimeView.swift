@@ -28,6 +28,7 @@ struct RealTimeView: View {
     @State var inferenceResult: String = ""
 
     // GradCAM
+    @AppStorage("isGradCAMAvailable") private var isGradCAMAvailable: Bool = false //設定画面で切り替え(デフォルトは無効)
     @State private var isGradCAMEnabled: Bool = false
     @State private var gradcamImage: UIImage? = nil
     private let gradcamComputer: GradCAMComputer? = GradCAMComputer()
@@ -43,6 +44,11 @@ struct RealTimeView: View {
             }
         }
         .onAppear{
+            //設定でGradCAMが無効なら、前回のオン状態を解除しておく
+            if !isGradCAMAvailable {
+                isGradCAMEnabled = false
+                gradcamImage = nil
+            }
             videoCapture.run { sampleBuffer in
                 if let convertImage = UIImageFromSampleBuffer(sampleBuffer) {
                     DispatchQueue.main.async {
@@ -95,7 +101,9 @@ struct RealTimeView: View {
 
                     Spacer()
 
-                    gradcamToggleButton
+                    if isGradCAMAvailable {
+                        gradcamToggleButton
+                    }
                 }
                 .padding(.horizontal)
             }
@@ -105,7 +113,8 @@ struct RealTimeView: View {
     // MARK: - Landscape Layout
     var landscapeLayout: some View {
         HStack(spacing: 0) {
-            // 左: GradCAMマージ画像(カメラ+ヒートマップ)
+            // 左: GradCAMマージ画像(カメラ+ヒートマップ)  ※設定で無効時は非表示
+            if isGradCAMAvailable {
             ZStack {
                 if isGradCAMEnabled, let img = image {
                     Image(uiImage: img)
@@ -125,6 +134,7 @@ struct RealTimeView: View {
             .aspectRatio(1, contentMode: .fit)
             .clipped()
             .padding(.leading, 4)
+            }
 
             // 中央: 素のカメラ映像
             ZStack {
@@ -150,7 +160,9 @@ struct RealTimeView: View {
                 Spacer()
 
                 HStack(spacing: 8) {
-                    gradcamToggleButton
+                    if isGradCAMAvailable {
+                        gradcamToggleButton
+                    }
 
                     Button(action: {
                         self.screenImage = UIApplication.shared.windows[0].rootViewController?.view!.getImage(rect: self.rect)

@@ -89,11 +89,14 @@ struct UploadView: View {
                     
                     //Interference
                     Button(action: {
+                        // 保存画像は読影者が構え直せないため、視野を捨てないよう letterbox で前処理する
+                        let inputSize = CGSize(width: 640, height: 640)
                         if image == nil{
-                            let yolov5Interference = Yolov5Interference(image: UIImage(imageLiteralResourceName: samplePhotos[currentIndex]))
+                            let sample = UIImage(imageLiteralResourceName: samplePhotos[currentIndex])
+                            let yolov5Interference = Yolov5Interference(image: sample.letterboxed(to: inputSize) ?? sample)
                             result = yolov5Interference.classify()
                         } else {
-                            let yolov5Interference = Yolov5Interference(image: image!)
+                            let yolov5Interference = Yolov5Interference(image: image!.letterboxed(to: inputSize) ?? image!)
                             result = yolov5Interference.classify()
                         }
        

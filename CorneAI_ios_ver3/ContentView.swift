@@ -21,9 +21,13 @@ class User : ObservableObject {
 struct ContentView: View {
     @ObservedObject var user = User()
     @State private var goTakePhoto: Bool = false //判定スタートボタン
+    @State private var showSettings: Bool = false //設定シート表示
+    @AppStorage("isGradCAMAvailable") private var isGradCAMAvailable: Bool = false //GradCAM機能の有効/無効(デフォルトは無効)
     var body: some View {
         
         NavigationStack {
+            ZStack {
+            VStack {
             VStack(spacing:80) {
                 Text("CorneAI_for_ios")
                     .font(.largeTitle)
@@ -72,7 +76,55 @@ struct ContentView: View {
                     .font(Font.largeTitle)            .frame(minWidth:0, maxWidth: CGFloat.infinity, minHeight:75)
                     .background(Color.blue)
                     .padding()
+            }
 
+                //右下の歯車ボタン(設定): ZStackの最前面に重ねるだけなので既存レイアウトに影響しない
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showSettings = true
+                        }) {
+                            Image(systemName: "gearshape.fill")
+                                .font(.title)
+                                .foregroundColor(.gray)
+                                .padding()
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView(isGradCAMAvailable: $isGradCAMAvailable)
             }
         }
+    }
+}
+
+//設定画面
+struct SettingsView: View {
+    @Binding var isGradCAMAvailable: Bool
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Toggle(isOn: $isGradCAMAvailable) {
+                        Label("GradCAM", systemImage: "flame.fill")
+                    }
+                } footer: {
+                    Text("オンにすると、Real-time画面でGradCAMヒートマップ表示を選択できるようになります。")
+                }
+            }
+            .navigationTitle("設定")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("完了") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
 }
